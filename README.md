@@ -1,4 +1,17 @@
-Este projeto implementa um sistema de chat rudimentar usando Java Message Service (JMS) com Apache ActiveMQ como broker de mensagens.
+💬 Sistema de Chat JMS
+Um sistema de chat em tempo real implementado com Java Message Service (JMS) e Apache ActiveMQ, oferecendo uma interface gráfica moderna e funcionalidades completas de comunicação.
+
+🌟 Características
+
+Interface gráfica moderna com JavaFX
+Mensagens em tempo real via JMS
+Chat público (broadcast para todos)
+Mensagens privadas entre usuários
+Timestamps automáticos
+Scroll automático na área de mensagens
+Arquitetura robusta com ActiveMQ
+
+
 📁 Estrutura do Projeto
 src/
 ├── main/
@@ -21,6 +34,7 @@ src/
 │       │   └── chat.fxml                     # Interface do chat
 │       └── css/
 │           └── styles.css                    # Estilos CSS
+
 🚀 Como Executar
 Opção 1: ActiveMQ Standalone (Recomendado)
 
@@ -33,31 +47,32 @@ Compilar e executar o cliente:
 bashmvn clean compile
 mvn javafx:run
 
-Funcionalidades Implementadas
+
+
+✨ Funcionalidades Implementadas
 ✅ Cliente
 
- Interface gráfica com JavaFX
- Campo para digitar mensagens
- Campo para código do destinatário
- Área de exibição das mensagens recebidas
- Botão enviar e suporte a tecla Enter
- Código de usuário obrigatório
- Mensagens broadcast (todos os usuários)
- Mensagens privadas (usuário específico)
- Timestamp nas mensagens
- Scroll automático na área de mensagens
+🖥️ Interface gráfica com JavaFX
+✍️ Campo para digitar mensagens
+👤 Campo para código do destinatário
+📺 Área de exibição das mensagens recebidas
+🔄 Botão enviar e suporte a tecla Enter
+🆔 Código de usuário obrigatório
+📢 Mensagens broadcast (todos os usuários)
+💬 Mensagens privadas (usuário específico)
+⏰ Timestamp nas mensagens
+📜 Scroll automático na área de mensagens
 
 ✅ Servidor/Broker
 
- Distribuição de mensagens via JMS
- Uso de Topics para mensagens broadcast
- Uso de Queues para mensagens privadas
- Servidor embarcado opcional
+📤 Distribuição de mensagens via JMS
+📡 Uso de Topics para mensagens broadcast
+📫 Uso de Queues para mensagens privadas
+🔧 Servidor embarcado opcional
+
 
 🛠️ Tecnologias Utilizadas
+TecnologiaVersãoDescriçãoJava11+Linguagem de programaçãoJavaFX17Interface gráficaApache ActiveMQ5.17.xBroker JMSMaven-Gerenciamento de dependênciasJackson-Serialização JSON
 
-Java 11+
-JavaFX 17 (Interface gráfica)
-Apache ActiveMQ 5.17.x (Broker JMS)
-Maven (Gerenciamento de dependências)
-Jackson (Serialização JSON)
+📝 Licença
+Este projeto é desenvolvido para fins educacionais e demonstração de conceitos JMS.
