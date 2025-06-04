@@ -1,22 +1,21 @@
 package fumec.br.javafxactivemqmensageria.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class ChatMessage {
+public class ChatMessage implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String senderCode;
     private String recipientCode;
     private String content;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime timestamp;
-
     private MessageType type;
 
-    @JsonIgnore
     private transient String formattedMessage;
 
     public ChatMessage() {
@@ -79,12 +78,10 @@ public class ChatMessage {
         this.type = type;
     }
 
-    @JsonIgnore
     public String getFormattedMessage() {
         if (formattedMessage == null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             String timeStr = timestamp.format(formatter);
-
             switch (type) {
                 case PRIVATE:
                     formattedMessage = String.format("[%s] %s -> %s: %s", timeStr, senderCode, recipientCode, content);
@@ -103,5 +100,4 @@ public class ChatMessage {
     public String toString() {
         return getFormattedMessage();
     }
-
 }

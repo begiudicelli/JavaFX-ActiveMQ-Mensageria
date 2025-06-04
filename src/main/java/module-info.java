@@ -2,9 +2,6 @@ module fumec.br.javafxactivemqmensageria {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires com.fasterxml.jackson.databind;
-    requires com.fasterxml.jackson.datatype.jsr310;
-
     requires java.naming;
     requires jakarta.messaging;
     requires activemq.client;

@@ -1,7 +1,5 @@
 package fumec.br.javafxactivemqmensageria.model.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fumec.br.javafxactivemqmensageria.model.entities.ChatMessage;
 import jakarta.jms.*;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -9,6 +7,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import java.util.function.Consumer;
 
 public class JMSService {
+
     private static final String BROKER_URL = "tcp://localhost:61616";
     private static final String BROADCAST_TOPIC = "chat.broadcast";
     private static final String PRIVATE_QUEUE_PREFIX = "chat.private.";
@@ -18,13 +17,11 @@ public class JMSService {
     private MessageProducer broadcastProducer;
     private MessageConsumer broadcastConsumer;
     private MessageConsumer privateConsumer;
-    private final ObjectMapper objectMapper;
+
     private final String userCode;
 
     public JMSService(String userCode) throws JMSException {
         this.userCode = userCode;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
         initializeConnection();
     }
 
@@ -35,10 +32,9 @@ public class JMSService {
 
         Topic broadcastTopic = session.createTopic(BROADCAST_TOPIC);
         broadcastProducer = session.createProducer(broadcastTopic);
+        broadcastConsumer = session.createConsumer(broadcastTopic);
 
         Queue privateQueue = session.createQueue(PRIVATE_QUEUE_PREFIX + userCode);
-
-        broadcastConsumer = session.createConsumer(broadcastTopic);
         privateConsumer = session.createConsumer(privateQueue);
 
         connection.start();
@@ -59,23 +55,15 @@ public class JMSService {
     }
 
     private void sendMessage(ChatMessage message, MessageProducer producer) throws JMSException {
-        try {
-            String jsonMessage = objectMapper.writeValueAsString(message);
-            TextMessage textMessage = session.createTextMessage(jsonMessage);
-            producer.send(textMessage);
-        } catch (Exception e) {
-            throw new JMSException("Erro ao serializar mensagem: " + e.getMessage());
-        }
+        ObjectMessage objectMessage = session.createObjectMessage(message);
+        producer.send(objectMessage);
     }
-
 
     public void setBroadcastMessageListener(Consumer<ChatMessage> messageHandler) throws JMSException {
         broadcastConsumer.setMessageListener(message -> {
             try {
-                if (message instanceof TextMessage) {
-                    String jsonMessage = ((TextMessage) message).getText();
-                    ChatMessage chatMessage = objectMapper.readValue(jsonMessage, ChatMessage.class);
-
+                if (message instanceof ObjectMessage objectMessage) {
+                    ChatMessage chatMessage = (ChatMessage) objectMessage.getObject();
                     if (!chatMessage.getSenderCode().equals(userCode)) {
                         messageHandler.accept(chatMessage);
                     }
@@ -86,13 +74,11 @@ public class JMSService {
         });
     }
 
-
     public void setPrivateMessageListener(Consumer<ChatMessage> messageHandler) throws JMSException {
         privateConsumer.setMessageListener(message -> {
             try {
-                if (message instanceof TextMessage) {
-                    String jsonMessage = ((TextMessage) message).getText();
-                    ChatMessage chatMessage = objectMapper.readValue(jsonMessage, ChatMessage.class);
+                if (message instanceof ObjectMessage objectMessage) {
+                    ChatMessage chatMessage = (ChatMessage) objectMessage.getObject();
                     messageHandler.accept(chatMessage);
                 }
             } catch (Exception e) {

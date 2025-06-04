@@ -69,9 +69,7 @@ public class ChatController implements Initializable {
     @FXML
     private void onSendMessage() {
         String content = messageField.getText().trim();
-        if (content.isEmpty()) {
-            return;
-        }
+        if (content.isEmpty()) return;
 
         String recipient = recipientField.getText().trim();
 
@@ -86,7 +84,6 @@ public class ChatController implements Initializable {
 
             messageField.clear();
             messageField.requestFocus();
-
         } catch (JMSException e) {
             showError("Erro ao enviar mensagem", e.getMessage());
         }

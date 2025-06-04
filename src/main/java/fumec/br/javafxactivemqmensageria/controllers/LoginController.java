@@ -55,29 +55,15 @@ public class LoginController implements Initializable {
         showStatus("Conectando...", false);
         connectButton.setDisable(true);
 
-        // conexao ocorre em thread separada para nao ocupar UI!!!
-        new Thread(() -> {
-            try {
-                Thread.sleep(500);
-                Platform.runLater(() -> {
-                    try {
-                        openChatWindow(userCode);
-                        closeLoginWindow();
-                    } catch (IOException e) {
-                        showStatus("Erro ao abrir janela do chat: " + e.getMessage(), true);
-                        connectButton.setDisable(false);
-                        System.err.println(e.getMessage());
-                    }
-                });
-
-            } catch (InterruptedException e) {
-                Platform.runLater(() -> {
-                    showStatus("Conexão interrompida.", true);
-                    connectButton.setDisable(false);
-                });
-                Thread.currentThread().interrupt();
-            }
-        }).start();
+        try {
+            openChatWindow(userCode);
+            closeLoginWindow();
+        } catch (IOException e) {
+            showStatus("Erro ao abrir janela do chat: " + e.getMessage(), true);
+            showErrorDialog("Erro ao carregar a janela de chat.\n" + e.getMessage());
+            connectButton.setDisable(false);
+            System.err.println(e.getMessage());
+        }
     }
 
     @FXML
@@ -98,11 +84,15 @@ public class LoginController implements Initializable {
 
     private void showStatus(String message, boolean isError) {
         statusLabel.setText(message);
-        if (isError) {
-            statusLabel.setStyle("-fx-text-fill: red;");
-        } else {
-            statusLabel.setStyle("-fx-text-fill: blue;");
-        }
+        statusLabel.setStyle(isError ? "-fx-text-fill: red;" : "-fx-text-fill: blue;");
+    }
+
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText("Falha ao iniciar o chat");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void openChatWindow(String userCode) throws IOException {
@@ -111,7 +101,6 @@ public class LoginController implements Initializable {
             Parent chatRoot = fxmlLoader.load();
 
             ChatController chatController = fxmlLoader.getController();
-
             if (chatController != null) {
                 chatController.initializeJMS(userCode);
             }
